@@ -14,7 +14,7 @@ In what follows:
 - ispl-file: the ispl file on which to perform the verification
 
 ```bash
-$- python mcmas-multi-coalitions.py path-to-mcmas mcmas-optional-parameters ispl-file
+python mcmas-multi-coalitions.py path-to-mcmas mcmas-optional-parameters ispl-file
 ```
 
 Note that, w.r.t. standard mcmas, here the ispl can be enriched to guide a parametric generation of the agents coalitions. Look the enhanced version of the dining_cryptographers ispl (modified w.r.t. the version available in mcmas).
