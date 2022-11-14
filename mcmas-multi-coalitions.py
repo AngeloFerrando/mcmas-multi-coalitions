@@ -9,9 +9,9 @@ def main(args):
     ISPL_FILE = args[3]
 
     agents = get_agents(ISPL_FILE)
-    # print('Agents:', agents)
+    print('Agents:', agents)
     requirements = get_requirements(ISPL_FILE, len(agents))
-    # print('Requirements:', requirements)
+    print('Requirements:', requirements)
     coalitions = generate_coalitions(requirements, agents)
     start = datetime.datetime.now()
     good_coalitions = mcmas(MCMAS_PATH, MCMAS_PARAMS, ISPL_FILE, coalitions)
@@ -20,9 +20,6 @@ def main(args):
     for good_coalition in good_coalitions:
         print(good_coalition)
     print('### Execution time:', (end-start).microseconds / 1000, '[ms]')
-
-
-
 
 def mcmas(MCMAS_PATH, MCMAS_PARAMS, ispl, coalitions):
     good_coalitions = []
@@ -134,7 +131,7 @@ def get_requirements(ispl, n):
                     s.add(ts1.strip())
                 split.append(s)
         requirements.append((g, int(min_c), int(max_c), together, split))
-        content = content[content.find('}')+1:]
+        content = content[content.find('};')+2:]
     return requirements
 
 def get_agents(ispl):
