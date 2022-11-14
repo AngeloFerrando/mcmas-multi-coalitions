@@ -108,9 +108,8 @@ InitStates
  and (DinCrypt1.seedifferent=empty) and (DinCrypt2.seedifferent=empty) and (DinCrypt3.seedifferent=empty);
 end InitStates
 Groups
-g1 = {Environment,DinCrypt1,DinCrypt2};
+	g1 = {min: 2; max: 3; together: DinCrypt1~DinCrypt2; split: DinCrypt1~DinCrypt3};
 end Groups
-
 Formulae
     AG((odd and !c1paid) -> (K(DinCrypt1, c2paid or c3paid)) and !K(DinCrypt1, c2paid) and !K(DinCrypt1, c3paid));
     AG(even -> GCK(g1, !(c1paid or c2paid or c3paid)));
