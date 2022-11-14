@@ -109,10 +109,8 @@ InitStates
 end InitStates
 Groups
 	g1 = {min: 2; max: 3; together: DinCrypt1~DinCrypt2; split: DinCrypt1~DinCrypt3};
-    g2 = {min: 1; max: 2; split: DinCrypt2~DinCrypt3};
 end Groups
 Formulae
     AG((odd and !c1paid) -> (K(DinCrypt1, c2paid or c3paid)) and !K(DinCrypt1, c2paid) and !K(DinCrypt1, c3paid));
     AG(even -> GCK(g1, !(c1paid or c2paid or c3paid)));
-    AG(even -> GCK(g2, !(c1paid or c2paid or c3paid)));
 end Formulae
