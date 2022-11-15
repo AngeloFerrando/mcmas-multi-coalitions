@@ -16,10 +16,14 @@ def main(args):
     start = datetime.datetime.now()
     good_coalitions = mcmas(MCMAS_PATH, MCMAS_PARAMS, ISPL_FILE, coalitions)
     end = datetime.datetime.now()
-    print('Good coalitions:')
+    print('\nGood coalitions:\n')
+    i = 0
     for good_coalition in good_coalitions:
-        print(good_coalition)
-    print('### Execution time:', (end-start).microseconds / 1000, '[ms]')
+        print('Coalition', i)
+        i = i + 1
+        for var in good_coalition:
+            print('\t', var, '=', '{', ','.join(good_coalition[var]), '};')
+    print('\n### N. of good coalitions:', len(good_coalitions), '### Execution time:', (end-start).microseconds / 1000, '[ms]')
 
 def mcmas(MCMAS_PATH, MCMAS_PARAMS, ispl, coalitions):
     good_coalitions = []
