@@ -13,16 +13,10 @@ def main(args):
     requirements = get_requirements(ISPL_FILE, len(agents))
     print('Requirements:', requirements)
     coalitions = generate_coalitions(requirements, agents)
+    print('\nGood coalitions:\n')
     start = datetime.datetime.now()
     good_coalitions = mcmas(MCMAS_PATH, MCMAS_PARAMS, ISPL_FILE, coalitions)
     end = datetime.datetime.now()
-    print('\nGood coalitions:\n')
-    i = 0
-    for good_coalition in good_coalitions:
-        print('Coalition', i)
-        i = i + 1
-        for var in good_coalition:
-            print('\t', var, '=', '{', ','.join(good_coalition[var]), '};')
     print('\n### N. of good coalitions:', len(good_coalitions), '### Execution time:', (end-start).microseconds / 1000, '[ms]')
 
 def mcmas(MCMAS_PATH, MCMAS_PARAMS, ispl, coalitions):
@@ -44,6 +38,9 @@ def mcmas(MCMAS_PATH, MCMAS_PARAMS, ispl, coalitions):
         output = stream.read()
         if is_satisfied(output):
             good_coalitions.append(coalition)
+            for var in coalition:
+                print('\t', var, '=', '{', ','.join(coalition[var]), '};')
+            print('')
         for i in range(0, n):
             permutation[i] = (permutation[i] + 1) % len(coalitions[link[i]])
             if permutation[i] != 0:
