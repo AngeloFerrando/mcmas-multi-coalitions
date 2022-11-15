@@ -101,7 +101,7 @@ def get_requirements(ispl, n):
         k = content.find('}', i)
         j = min(j, k)
         if i == -1:
-            min_c = 0
+            min_c = 1
         else:
             min_c = content[i+4:j].strip()
         i = content.find('max:')

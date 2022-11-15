@@ -1,117 +1,118 @@
--- The protocol for the 3 dining cryptographers (Chaum)
 Agent Environment
-  Obsvars:
-    numberofodd : { none, even, odd };
-  end Obsvars
-
   Vars:
-    coin1 : {head, tail};
-    coin2 : {head, tail};
-    coin3 : {head, tail};
+    state: {none, r1, r2, uk,
+        p, np, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10      };
+    agt: {a1, a2, a3};
   end Vars
-
-  Actions = { none };
+  Actions = {receive1,receive2,
+                 punish, npunish, wait};
   Protocol:
-    Other : {none};
+    (state=none) and agt=a1: {receive1};
+    (state=p or state=np) and agt=a2:{receive2};
+    state=h10: {punish, npunish};
+    state=h1 or state=r1 or state=r2 or state=uk or state=h2 or state=h3 or state=h4 or state=h5 or state=h6 or state=h7 or state=h8 or state=h9 or state=h10: {wait};
   end Protocol
-
   Evolution:
-    numberofodd=even if ( ( numberofodd=none) and (
-(  DinCrypt1.Action=sayequal and  DinCrypt2.Action=saydifferent and  DinCrypt3.Action=saydifferent )       or
-(  DinCrypt1.Action=saydifferent and  DinCrypt2.Action=sayequal and  DinCrypt3.Action=saydifferent )       or
-(  DinCrypt1.Action=saydifferent and  DinCrypt2.Action=saydifferent and  DinCrypt3.Action=sayequal )       or
-(  DinCrypt1.Action=sayequal and  DinCrypt2.Action=sayequal and  DinCrypt3.Action=sayequal ) ) );
-    numberofodd=odd if ( ( numberofodd=none) and (
-(  DinCrypt1.Action=saydifferent and  DinCrypt2.Action=saydifferent and  DinCrypt3.Action=saydifferent )       or
-(  DinCrypt1.Action=sayequal and  DinCrypt2.Action=sayequal and  DinCrypt3.Action=saydifferent )       or
-(  DinCrypt1.Action=sayequal and  DinCrypt2.Action=saydifferent and  DinCrypt3.Action=sayequal )       or
-(  DinCrypt1.Action=saydifferent and  DinCrypt2.Action=sayequal and  DinCrypt3.Action=sayequal )  ) );
+    state=h1 if (state=r1 or state=r2 or state=uk) and Action=wait;
+    state=h2 if state=h1 and Action=wait;
+    state=h3 if state=h2 and Action=wait;
+    state=h4 if state=h3 and Action=wait;
+    state=h5 if state=h4 and Action=wait;
+    state=h6 if state=h5 and Action=wait;
+    state=h7 if state=h6 and Action=wait;
+    state=h8 if state=h7 and Action=wait;
+    state=h9 if state=h8 and Action=wait;
+    state=h10 if state=h9 and Action=wait;
+    state=r1 and agt=a1 if Action=receive1 and Voter1.Action=give1;
+    state=r2 and agt=a1 if Action=receive1 and Voter1.Action=give2;
+    state=uk and agt=a1 if Action=receive1 and Voter1.Action=ngive;
+    state=r1 and agt=a2 if Action=receive2 and Voter2.Action=give1;
+    state=r2 and agt=a2 if Action=receive2 and Voter2.Action=give2;
+    state=uk and agt=a2 if Action=receive2 and Voter2.Action=ngive;
+    state=p and agt=a2 if Action=punish and agt=a1;
+    state=np and agt=a2 if Action=npunish and agt=a1;
+    state=p and agt=a3 if Action=punish and agt=a2;
+    state=np and agt=a3 if Action=npunish and agt=a2;
   end Evolution
 end Agent
 
-Agent DinCrypt1
-  Lobsvars = { coin1, coin3};
+Agent Voter1
   Vars:
-    payer : {yes,no};
-    seedifferent : { empty, yes, no };
+    state: {init, ng1, ng2, v1, v2, g1, g2};
   end Vars
-  Actions = { sayequal, saydifferent, none };
+  Actions = {vote1, vote2, give1, give2, none, ngive};
   Protocol:
-    (payer=no and seedifferent=yes): {saydifferent};
-    (payer=no and seedifferent=no) : {sayequal};
-    (payer=yes and seedifferent=yes): {sayequal};
-    (payer=yes and seedifferent=no) : {saydifferent};
-    Other: {none};
+    state=init: {vote1, vote2};
+    state=v1 : {give1, ngive};
+    state=v2 : {give2, ngive};
+    state=g1 or state=g2 or state=ng1 or state=ng2: {none};
   end Protocol
   Evolution:
-    (seedifferent=no) if ( seedifferent=empty and Environment.coin1=head and Environment.coin3=head ) or
-      ( seedifferent=empty and Environment.coin1=tail and Environment.coin3=tail );
-    (seedifferent=yes)  if ( seedifferent=empty and Environment.coin1=head and Environment.coin3=tail ) or
-      ( seedifferent=empty and Environment.coin1=tail and Environment.coin3=head );
+    state=v1 if state=init and Action=vote1;
+    state=v2 if state=init and Action=vote2;
+    state=g1 if (Action=give1) and Environment.Action=receive1;
+    state=g2 if (Action=give2) and Environment.Action=receive1;
+    state=ng1 if Action=ngive and state=v1 and Environment.Action=receive1;
+    state=ng2 if Action=ngive and state=v2 and Environment.Action=receive1;
   end Evolution
 end Agent
-Agent DinCrypt2
-  Lobsvars = { coin2, coin1};
+
+Agent Voter2
   Vars:
-    payer : {yes,no};
-    seedifferent : { empty, yes, no };
+    state: {init, ng1, ng2, v1, v2, g1, g2};
   end Vars
-  Actions = { sayequal, saydifferent, none };
+  Actions = {vote1, vote2, give1, give2, none, ngive};
   Protocol:
-    (payer=no and seedifferent=yes): {saydifferent};
-    (payer=no and seedifferent=no) : {sayequal};
-    (payer=yes and seedifferent=yes): {sayequal};
-    (payer=yes and seedifferent=no) : {saydifferent};
-    Other: {none};
+    state=init: {vote1, vote2};
+    state=v1 : {give1, ngive};
+    state=v2 : {give2, ngive};
+    state=g1 or state=g2 or state=ng1 or state=ng2: {none};
   end Protocol
   Evolution:
-    (seedifferent=no) if ( seedifferent=empty and Environment.coin2=head and Environment.coin1=head ) or
-      ( seedifferent=empty and Environment.coin2=tail and Environment.coin1=tail );
-    (seedifferent=yes)  if ( seedifferent=empty and Environment.coin2=head and Environment.coin1=tail ) or
-      ( seedifferent=empty and Environment.coin2=tail and Environment.coin1=head );
+    state=v1 if state=init and Action=vote1;
+    state=v2 if state=init and Action=vote2;
+    state=g1 if (Action=give1) and Environment.Action=receive2;
+    state=g2 if (Action=give2) and Environment.Action=receive2;
+    state=ng1 if Action=ngive and state=v1 and Environment.Action=receive2;
+    state=ng2 if Action=ngive and state=v2 and Environment.Action=receive2;
   end Evolution
+
 end Agent
-Agent DinCrypt3
-  Lobsvars = { coin3, coin2};
-  Vars:
-    payer : {yes,no};
-    seedifferent : { empty, yes, no };
-  end Vars
-  Actions = { sayequal, saydifferent, none };
-  Protocol:
-    (payer=no and seedifferent=yes): {saydifferent};
-    (payer=no and seedifferent=no) : {sayequal};
-    (payer=yes and seedifferent=yes): {sayequal};
-    (payer=yes and seedifferent=no) : {saydifferent};
-    Other: {none};
-  end Protocol
-  Evolution:
-    (seedifferent=no) if ( seedifferent=empty and Environment.coin3=head and Environment.coin2=head ) or
-      ( seedifferent=empty and Environment.coin3=tail and Environment.coin2=tail );
-    (seedifferent=yes)  if ( seedifferent=empty and Environment.coin3=head and Environment.coin2=tail ) or
-      ( seedifferent=empty and Environment.coin3=tail and Environment.coin2=head );
-  end Evolution
-end Agent
+
 Evaluation
-  c1paid if ( DinCrypt1.payer=yes );
-  c2paid if ( DinCrypt2.payer=yes );
-  c3paid if ( DinCrypt3.payer=yes );
-  odd if ( Environment.numberofodd=odd);
-  even if ( Environment.numberofodd=even);
+  punish1 if Environment.state=p and Environment.agt=a2;
+  npunish1 if Environment.state=np and Environment.agt=a2;
+  v1_1_give if Voter1.state=g1;
+  v2_1_give if Voter1.state=g2;
+  ngive1 if Voter1.state=ng1 or Voter1.state=ng2;
+  give1 if Voter1.state=g1 or Voter1.state=g2;
+
+  punish2 if Environment.state=p and Environment.agt=a3;
+  npunish2 if Environment.state=np and Environment.agt=a3;
+  v1_2_give if Voter2.state=g1;
+  v2_2_give if Voter2.state=g2;
+  ngive2 if Voter2.state=ng1 or Voter2.state=ng2;
+  give2 if Voter2.state=g1 or Voter2.state=g2;
 end Evaluation
+
 InitStates
- ( ((DinCrypt1.payer=yes) and (DinCrypt2.payer=no) and (DinCrypt3.payer=no))  or
-((DinCrypt1.payer=no) and (DinCrypt2.payer=yes) and (DinCrypt3.payer=no))  or
-((DinCrypt1.payer=no) and (DinCrypt2.payer=no) and (DinCrypt3.payer=yes))  or
-((DinCrypt1.payer=no) and (DinCrypt2.payer=no) and (DinCrypt3.payer=no))  )
- and (Environment.numberofodd=none)
- and (DinCrypt1.seedifferent=empty) and (DinCrypt2.seedifferent=empty) and (DinCrypt3.seedifferent=empty);
+  Environment.state=none and (Environment.agt=a1) and (Voter1.state=init)
+  and (Voter2.state=init)
+  ;
 end InitStates
+
 Groups
-g1 = {Environment,DinCrypt1,DinCrypt2};
+g1 = {Environment};
+g2 = {Environment};
+g3 = {Environment};
+g4 = {Environment};
 end Groups
 
+
 Formulae
-    AG((odd and !c1paid) -> (K(DinCrypt1, c2paid or c3paid)) and !K(DinCrypt1, c2paid) and !K(DinCrypt1, c3paid));
-    AG(even -> GCK(g1, !(c1paid or c2paid or c3paid)));
+  <g2> G! (((ngive1 and npunish1)
+      or (give1 and punish1))
+      or  ((ngive2 and npunish2)
+      or (give2 and punish2))
+          );
 end Formulae
