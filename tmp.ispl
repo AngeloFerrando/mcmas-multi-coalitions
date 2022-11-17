@@ -1,118 +1,296 @@
-Agent Environment
-  Vars:
-    state: {none, r1, r2, uk,
-        p, np, h1, h2, h3, h4, h5, h6        };
-    agt: {a1, a2, a3};
-  end Vars
-  Actions = {receive1,receive2,
-                 punish, npunish, wait};
-  Protocol:
-    (state=none) and agt=a1: {receive1};
-    (state=p or state=np) and agt=a2:{receive2};
-    state=h6: {punish, npunish};
-    state=h1 or state=r1 or state=r2 or state=uk
-    or state=h2 or state=h3 or state=h4 or state=h5: {wait};
-  end Protocol
-  Evolution:
-    state=h1 if (state=r1 or state=r2 or state=uk) and Action=wait;
-    state=h2 if state=h1 and Action=wait;
-    state=h3 if state=h2 and Action=wait;
-    state=h4 if state=h3 and Action=wait;
-    state=h5 if state=h4 and Action=wait;
-    state=h6 if state=h5 and Action=wait;
-    state=r1 and agt=a1 if Action=receive1 and Voter1.Action=give1;
-    state=r2 and agt=a1 if Action=receive1 and Voter1.Action=give2;
-    state=uk and agt=a1 if Action=receive1 and Voter1.Action=ngive;
-    state=r1 and agt=a2 if Action=receive2 and Voter2.Action=give1;
-    state=r2 and agt=a2 if Action=receive2 and Voter2.Action=give2;
-    state=uk and agt=a2 if Action=receive2 and Voter2.Action=ngive;
-    state=p and agt=a2 if Action=punish and agt=a1;
-    state=np and agt=a2 if Action=npunish and agt=a1;
-    state=p and agt=a3 if Action=punish and agt=a2;
-    state=np and agt=a3 if Action=npunish and agt=a2;
-  end Evolution
-end Agent
 
-Agent Voter1
-  Vars:
-    state: {init, ng1, ng2, v1, v2, g1, g2};
-  end Vars
-  Actions = {vote1, vote2, give1, give2, none, ngive};
-  Protocol:
-    state=init: {vote1, vote2};
-    state=v1 : {give1, ngive};
-    state=v2 : {give2, ngive};
-    state=g1 or state=g2 or state=ng1 or state=ng2: {none};
-  end Protocol
-  Evolution:
-    state=v1 if state=init and Action=vote1;
-    state=v2 if state=init and Action=vote2;
-    state=g1 if (Action=give1) and Environment.Action=receive1;
-    state=g2 if (Action=give2) and Environment.Action=receive1;
-    state=ng1 if Action=ngive and state=v1 and Environment.Action=receive1;
-    state=ng2 if Action=ngive and state=v2 and Environment.Action=receive1;
-  end Evolution
-end Agent
+    Agent train1
+    	Lobsvars={};
+    	Vars :
+    		out: boolean;
+    		grant: boolean;
+    		gate: boolean;
+    		win: boolean;
+    	end Vars
+    	Actions={idle,request,move,exit};
+    	Protocol :
+    		out=true : {request,idle};
+    		grant=true : {move};
+    		gate=true : {exit};
+    	end Protocol
+    	Evolution :
+    		out=true and grant=false and gate=false and win=false if (out=true and Action=idle) or (gate=true and Action=exit);
+    		grant=true and out=false and gate=false and win=false if out=true and Action=request and controller.Action=accept1;
+    		gate=true and grant=false and out=false and win=true if grant=true and Action=move;
+    	end Evolution
+    end Agent
 
-Agent Voter2
-  Vars:
-    state: {init, ng1, ng2, v1, v2, g1, g2};
-  end Vars
-  Actions = {vote1, vote2, give1, give2, none, ngive};
-  Protocol:
-    state=init: {vote1, vote2};
-    state=v1 : {give1, ngive};
-    state=v2 : {give2, ngive};
-    state=g1 or state=g2 or state=ng1 or state=ng2: {none};
-  end Protocol
-  Evolution:
-    state=v1 if state=init and Action=vote1;
-    state=v2 if state=init and Action=vote2;
-    state=g1 if (Action=give1) and Environment.Action=receive2;
-    state=g2 if (Action=give2) and Environment.Action=receive2;
-    state=ng1 if Action=ngive and state=v1 and Environment.Action=receive2;
-    state=ng2 if Action=ngive and state=v2 and Environment.Action=receive2;
-  end Evolution
+    Agent train2
+    	Lobsvars={};
+    	Vars :
+    		out: boolean;
+    		grant: boolean;
+    		gate: boolean;
+    		win: boolean;
+    	end Vars
+    	Actions={idle,request,move,exit};
+    	Protocol :
+    		out=true : {request,idle};
+    		grant=true : {move};
+    		gate=true : {exit};
+    	end Protocol
+    	Evolution :
+    		out=true and grant=false and gate=false and win=false if (out=true and Action=idle) or (gate=true and Action=exit);
+    		grant=true and out=false and gate=false and win=false if out=true and Action=request and controller.Action=accept2;
+    		gate=true and grant=false and out=false and win=true if grant=true and Action=move;
+    	end Evolution
+    end Agent
 
-end Agent
+    Agent train3
+    	Lobsvars={};
+    	Vars :
+    		out: boolean;
+    		grant: boolean;
+    		gate: boolean;
+    		win: boolean;
+    	end Vars
+    	Actions={idle,request,move,exit};
+    	Protocol :
+    		out=true : {request,idle};
+    		grant=true : {move};
+    		gate=true : {exit};
+    	end Protocol
+    	Evolution :
+    		out=true and grant=false and gate=false and win=false if (out=true and Action=idle) or (gate=true and Action=exit);
+    		grant=true and out=false and gate=false and win=false if out=true and Action=request and controller.Action=accept3;
+    		gate=true and grant=false and out=false and win=true if grant=true and Action=move;
+    	end Evolution
+    end Agent
 
-Evaluation
-  punish1 if Environment.state=p and Environment.agt=a2;
-  npunish1 if Environment.state=np and Environment.agt=a2;
-  v1_1_give if Voter1.state=g1;
-  v2_1_give if Voter1.state=g2;
-  ngive1 if Voter1.state=ng1 or Voter1.state=ng2;
-  give1 if Voter1.state=g1 or Voter1.state=g2;
-  
-  punish2 if Environment.state=p and Environment.agt=a3;
-  npunish2 if Environment.state=np and Environment.agt=a3;
-  v1_2_give if Voter2.state=g1;
-  v2_2_give if Voter2.state=g2;
-  ngive2 if Voter2.state=ng1 or Voter2.state=ng2;
-  give2 if Voter2.state=g1 or Voter2.state=g2;
-end Evaluation
+    Agent train4
+    	Lobsvars={};
+    	Vars :
+    		out: boolean;
+    		grant: boolean;
+    		gate: boolean;
+    		win: boolean;
+    	end Vars
+    	Actions={idle,request,move,exit};
+    	Protocol :
+    		out=true : {request,idle};
+    		grant=true : {move};
+    		gate=true : {exit};
+    	end Protocol
+    	Evolution :
+    		out=true and grant=false and gate=false and win=false if (out=true and Action=idle) or (gate=true and Action=exit);
+    		grant=true and out=false and gate=false and win=false if out=true and Action=request and controller.Action=accept4;
+    		gate=true and grant=false and out=false and win=true if grant=true and Action=move;
+    	end Evolution
+    end Agent
 
-InitStates
-  Environment.state=none and (Environment.agt=a1) and (Voter1.state=init)
-  and (Voter2.state=init)
-  ;
-end InitStates
+    Agent train5
+    	Lobsvars={};
+    	Vars :
+    		out: boolean;
+    		grant: boolean;
+    		gate: boolean;
+    		win: boolean;
+    	end Vars
+    	Actions={idle,request,move,exit};
+    	Protocol :
+    		out=true : {request,idle};
+    		grant=true : {move};
+    		gate=true : {exit};
+    	end Protocol
+    	Evolution :
+    		out=true and grant=false and gate=false and win=false if (out=true and Action=idle) or (gate=true and Action=exit);
+    		grant=true and out=false and gate=false and win=false if out=true and Action=request and controller.Action=accept5;
+    		gate=true and grant=false and out=false and win=true if grant=true and Action=move;
+    	end Evolution
+    end Agent
 
-Groups
-g1 = {Environment,Voter1,Voter2};
-g2 = {Environment,Voter1,Voter2};
-g3 = {Environment,Voter1,Voter2};
-g4 = {Environment,Voter1,Voter2};
+    Agent train6
+    	Lobsvars={};
+    	Vars :
+    		out: boolean;
+    		grant: boolean;
+    		gate: boolean;
+    		win: boolean;
+    	end Vars
+    	Actions={idle,request,move,exit};
+    	Protocol :
+    		out=true : {request,idle};
+    		grant=true : {move};
+    		gate=true : {exit};
+    	end Protocol
+    	Evolution :
+    		out=true and grant=false and gate=false and win=false if (out=true and Action=idle) or (gate=true and Action=exit);
+    		grant=true and out=false and gate=false and win=false if out=true and Action=request and controller.Action=accept6;
+    		gate=true and grant=false and out=false and win=true if grant=true and Action=move;
+    	end Evolution
+    end Agent
+
+    Agent train7
+    	Lobsvars={};
+    	Vars :
+    		out: boolean;
+    		grant: boolean;
+    		gate: boolean;
+    		win: boolean;
+    	end Vars
+    	Actions={idle,request,move,exit};
+    	Protocol :
+    		out=true : {request,idle};
+    		grant=true : {move};
+    		gate=true : {exit};
+    	end Protocol
+    	Evolution :
+    		out=true and grant=false and gate=false and win=false if (out=true and Action=idle) or (gate=true and Action=exit);
+    		grant=true and out=false and gate=false and win=false if out=true and Action=request and controller.Action=accept7;
+    		gate=true and grant=false and out=false and win=true if grant=true and Action=move;
+    	end Evolution
+    end Agent
+
+    Agent train8
+    	Lobsvars={};
+    	Vars :
+    		out: boolean;
+    		grant: boolean;
+    		gate: boolean;
+    		win: boolean;
+    	end Vars
+    	Actions={idle,request,move,exit};
+    	Protocol :
+    		out=true : {request,idle};
+    		grant=true : {move};
+    		gate=true : {exit};
+    	end Protocol
+    	Evolution :
+    		out=true and grant=false and gate=false and win=false if (out=true and Action=idle) or (gate=true and Action=exit);
+    		grant=true and out=false and gate=false and win=false if out=true and Action=request and controller.Action=accept8;
+    		gate=true and grant=false and out=false and win=true if grant=true and Action=move;
+    	end Evolution
+    end Agent
+
+    Agent train9
+    	Lobsvars={};
+    	Vars :
+    		out: boolean;
+    		grant: boolean;
+    		gate: boolean;
+    		win: boolean;
+    	end Vars
+    	Actions={idle,request,move,exit};
+    	Protocol :
+    		out=true : {request,idle};
+    		grant=true : {move};
+    		gate=true : {exit};
+    	end Protocol
+    	Evolution :
+    		out=true and grant=false and gate=false and win=false if (out=true and Action=idle) or (gate=true and Action=exit);
+    		grant=true and out=false and gate=false and win=false if out=true and Action=request and controller.Action=accept9;
+    		gate=true and grant=false and out=false and win=true if grant=true and Action=move;
+    	end Evolution
+    end Agent
+
+    Agent train10
+    	Lobsvars={};
+    	Vars :
+    		out: boolean;
+    		grant: boolean;
+    		gate: boolean;
+    		win: boolean;
+    	end Vars
+    	Actions={idle,request,move,exit};
+    	Protocol :
+    		out=true : {request,idle};
+    		grant=true : {move};
+    		gate=true : {exit};
+    	end Protocol
+    	Evolution :
+    		out=true and grant=false and gate=false and win=false if (out=true and Action=idle) or (gate=true and Action=exit);
+    		grant=true and out=false and gate=false and win=false if out=true and Action=request and controller.Action=accept10;
+    		gate=true and grant=false and out=false and win=true if grant=true and Action=move;
+    	end Evolution
+    end Agent
+
+    Agent train11
+    	Lobsvars={};
+    	Vars :
+    		out: boolean;
+    		grant: boolean;
+    		gate: boolean;
+    		win: boolean;
+    	end Vars
+    	Actions={idle,request,move,exit};
+    	Protocol :
+    		out=true : {request,idle};
+    		grant=true : {move};
+    		gate=true : {exit};
+    	end Protocol
+    	Evolution :
+    		out=true and grant=false and gate=false and win=false if (out=true and Action=idle) or (gate=true and Action=exit);
+    		grant=true and out=false and gate=false and win=false if out=true and Action=request and controller.Action=accept11;
+    		gate=true and grant=false and out=false and win=true if grant=true and Action=move;
+    	end Evolution
+    end Agent
+
+    Agent train12
+    	Lobsvars={};
+    	Vars :
+    		out: boolean;
+    		grant: boolean;
+    		gate: boolean;
+    		win: boolean;
+    	end Vars
+    	Actions={idle,request,move,exit};
+    	Protocol :
+    		out=true : {request,idle};
+    		grant=true : {move};
+    		gate=true : {exit};
+    	end Protocol
+    	Evolution :
+    		out=true and grant=false and gate=false and win=false if (out=true and Action=idle) or (gate=true and Action=exit);
+    		grant=true and out=false and gate=false and win=false if out=true and Action=request and controller.Action=accept12;
+    		gate=true and grant=false and out=false and win=true if grant=true and Action=move;
+    	end Evolution
+    end Agent
+
+    Agent controller
+    	Lobsvars={};
+    	Vars :
+    		free: boolean;
+    		occupied: boolean;
+    	end Vars
+    	Actions={idle,accept1,accept2,accept3,accept4,accept5,accept6,accept7,accept8,accept9,accept10,accept11,accept12};
+    	Protocol :
+    		free=true : {idle,accept1,accept2,accept3,accept4,accept5,accept6,accept7,accept8,accept9,accept10,accept11,accept12};
+    		occupied=true : {idle};
+    	end Protocol
+    	Evolution :
+    		occupied=true and free=false if (free=true and ((controller.Action=accept1 and train1.Action=request) or (controller.Action=accept2 and train2.Action=request) or (controller.Action=accept3 and train3.Action=request) or (controller.Action=accept4 and train4.Action=request) or (controller.Action=accept5 and train5.Action=request) or (controller.Action=accept6 and train6.Action=request) or (controller.Action=accept7 and train7.Action=request) or (controller.Action=accept8 and train8.Action=request) or (controller.Action=accept9 and train9.Action=request) or (controller.Action=accept10 and train10.Action=request) or (controller.Action=accept11 and train11.Action=request) or (controller.Action=accept12 and train12.Action=request))) or (occupied=true and controller.Action=idle);
+    		free=true and occupied=false if occupied=true and controller.Action=idle;
+    		free=true and occupied=false if free=true and controller.Action=idle;
+    	end Evolution
+    end Agent
+
+    Evaluation
+    	win if (train1.win=true or train2.win=true or train3.win=true or train4.win=true or train5.win=true or train6.win=true or train7.win=true or train8.win=true or train9.win=true or train10.win=true or train11.win=true or train12.win=true);
+    end Evaluation
+    InitStates
+	train1.out=true and train1.grant=false and train1.gate=false and train1.win=false and
+	train2.out=true and train2.grant=false and train2.gate=false and train2.win=false and
+	train3.out=true and train3.grant=false and train3.gate=false and train3.win=false and
+	train4.out=true and train4.grant=false and train4.gate=false and train4.win=false and
+	train5.out=true and train5.grant=false and train5.gate=false and train5.win=false and
+	train6.out=true and train6.grant=false and train6.gate=false and train6.win=false and
+	train7.out=true and train7.grant=false and train7.gate=false and train7.win=false and
+	train8.out=true and train8.grant=false and train8.gate=false and train8.win=false and
+	train9.out=true and train9.grant=false and train9.gate=false and train9.win=false and
+	train10.out=true and train10.grant=false and train10.gate=false and train10.win=false and
+	train11.out=true and train11.grant=false and train11.gate=false and train11.win=false and
+	train12.out=true and train12.grant=false and train12.gate=false and train12.win=false and
+    	controller.free=true and controller.occupied=false;
+    end InitStates
+    Groups
+g1 = {train2};
 end Groups
 
-
-Formulae
-  (!<g3> X ! (<g1> F ((v1_1_give and npunish1)
-          or (v2_1_give and punish1)
-          or (ngive1 and punish1 ))))
-  and (!<g4> X ! (<g1> F ((v1_2_give and npunish2)
-	  or (v2_2_give and punish2)
-	  or (ngive2 and punish2)
-		)))
-		;
-end Formulae
+    Formulae
+    	<g1>F(win);
+    end Formulae

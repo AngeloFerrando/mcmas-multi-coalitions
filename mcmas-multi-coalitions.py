@@ -7,19 +7,23 @@ def main(args):
     MCMAS_PATH = args[1]
     MCMAS_PARAMS = args[2].replace('"', '')
     ISPL_FILE = args[3]
-
+    if len(args) >= 5:
+        first_n = int(args[4])
+    else:
+        first_n = 0
+        
+    start = datetime.datetime.now()
     agents = get_agents(ISPL_FILE)
     print('Agents:', agents)
     requirements = get_requirements(ISPL_FILE, len(agents))
     print('Requirements:', requirements)
     coalitions = generate_coalitions(requirements, agents)
     print('\nGood coalitions:\n')
-    start = datetime.datetime.now()
-    good_coalitions = mcmas(MCMAS_PATH, MCMAS_PARAMS, ISPL_FILE, coalitions)
+    good_coalitions = mcmas(MCMAS_PATH, MCMAS_PARAMS, ISPL_FILE, coalitions, first_n)
     end = datetime.datetime.now()
     print('\n### N. of good coalitions:', len(good_coalitions), '### Execution time:', (end-start).microseconds / 1000, '[ms]')
 
-def mcmas(MCMAS_PATH, MCMAS_PARAMS, ispl, coalitions):
+def mcmas(MCMAS_PATH, MCMAS_PARAMS, ispl, coalitions, first_n):
     good_coalitions = []
     n = len(coalitions.keys())
     permutation = []
@@ -41,6 +45,8 @@ def mcmas(MCMAS_PATH, MCMAS_PARAMS, ispl, coalitions):
             for var in coalition:
                 print('\t', var, '=', '{', ','.join(coalition[var]), '};')
             print('')
+            if len(good_coalitions) == first_n:
+                return good_coalitions
         for i in range(0, n):
             permutation[i] = (permutation[i] + 1) % len(coalitions[link[i]])
             if permutation[i] != 0:
