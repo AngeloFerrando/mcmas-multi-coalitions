@@ -2,6 +2,9 @@
 
 MCMAS extension to consider multi coalitions. That is, mcmas is called for achieving the verification of a given ispl, but the coalitions of agents that make the formulae satisfied are returned to the user.
 
+## Publication
+Angelo Ferrando and Vadim Malvone. How to Find Good Coalitions to Achieve Strategic Objectives. In the proceedings of the 15th International Conference on Agents and Artificial Intelligence (ICAART 2023). 
+
 ## Prerequisites
 
 - MCMAS (https://vas.doc.ic.ac.uk/software/mcmas/)
